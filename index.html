@@ -141,7 +141,6 @@
         .skill-body { flex: 1; }
         .skill-type-tag { font-size: 0.72rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 3px; }
         .skill-desc { font-size: 0.88rem; color: #cbd5e1; line-height: 1.45; }
-        .skill-bloom-buff { margin-top: 4px; font-size: 0.82rem; color: #fde047; font-weight: 700; background: rgba(253, 224, 71, 0.1); padding: 4px 8px; border-radius: 6px; display: inline-block; border: 1px solid rgba(253, 224, 71, 0.3); }
 
         .lightbox-backdrop, .modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; z-index: 300; }
         .lightbox-img-wrap { max-width: 90vw; max-height: 90vh; border-radius: 16px; overflow: hidden; box-shadow: 0 16px 48px rgba(0,0,0,0.8); border: 2px solid rgba(255,255,255,0.2); position: relative; }
@@ -566,8 +565,17 @@ function updateHeaderStats() {
 function toggleSidebar() { document.getElementById('sidebarNav').classList.toggle('collapsed'); }
 function toggleQuickEdit() { window.isQuickEditMode = document.getElementById('quickEditToggle').checked; updateView(); }
 
-function loadUpdateLogs() { const saved = localStorage.getItem(LOG_KEY); return saved ? JSON.parse(saved) : [{ date: "2026-08-27", content: "1.目前剛設立好沒多久，資料上會有缺失或是不正確是正常，請多包涵 2.新增無人島ジャック！真夏のサバイバルデイズ中Gamers 泳裝資料" }]; }
+// ==========================================
+// 🌸 Miko 的菁英 JSON 資料打包邏輯 🌸
+// ==========================================
+function getHardcodedLogs() { return [{"id": 1, "date": "2026-08-27", "content": "新增即將開設的無人島ジャック！真夏のサバイバルデイズ轉蛋中Gamers 泳裝資料（共4名）"}]; }
+function loadUpdateLogs() { const saved = localStorage.getItem(LOG_KEY); return saved ? JSON.parse(saved) : getHardcodedLogs(); }
 function saveUpdateLogs() { updateLogs.sort((a, b) => new Date(b.date) - new Date(a.date)); localStorage.setItem(LOG_KEY, JSON.stringify(updateLogs)); renderHeaderDate(); }
+
+function getHardcodedSettings() { return { typeIcons: { happy: "", pure: "", cute: "" }, skillIcons: { sp: "", active: "", passive: "" }, avatars: {}, gachaPools: [ { id: "pool_1", name: "常設池", date: "2026-08-20" } ], coopTypes: [ { id: "coop_1", name: "預設欄位", imgUrl: "" } ] }; }
+function loadSystemSettings() { const saved = localStorage.getItem(SETTINGS_KEY); return saved ? { ...getHardcodedSettings(), ...JSON.parse(saved) } : getHardcodedSettings(); }
+function saveSystemSettingsToStorage() { localStorage.setItem(SETTINGS_KEY, JSON.stringify(systemSettings)); }
+
 function renderHeaderDate() { const el = document.getElementById('headerUpdateDate'); el.innerText = '📝 更新紀錄'; }
 function openUpdateLogModal() { document.getElementById('newLogDate').value = new Date().toISOString().split('T')[0]; document.getElementById('newLogContent').value = ''; renderUpdateLogList(); document.getElementById('updateLogModal').style.display = 'flex'; }
 function closeUpdateLogModal() { document.getElementById('updateLogModal').style.display = 'none'; }
@@ -575,8 +583,6 @@ function addUpdateLog() { const date = document.getElementById('newLogDate').val
 function deleteUpdateLog(id) { if(confirm('確定刪除？')) { updateLogs = updateLogs.filter(log => log.id !== id); saveUpdateLogs(); renderUpdateLogList(); } }
 function renderUpdateLogList() { document.getElementById('updateLogListContainer').innerHTML = updateLogs.length === 0 ? '<div style="text-align:center; padding:10px;">無紀錄</div>' : updateLogs.map(log => `<div class="update-log-item"><div class="update-log-header"><span class="update-log-date">📅 ${log.date}</span></div><div class="update-log-content">${log.content}</div></div>`).join(''); }
 
-function loadSystemSettings() { const saved = localStorage.getItem(SETTINGS_KEY); return saved ? { ...{ typeIcons: { happy: "", pure: "", cute: "" }, skillIcons: { sp: "", active: "", passive: "" }, avatars: {}, gachaPools: [ { id: "pool_1", name: "常設池", date: "2026-08-20" } ], coopTypes: [ { id: "coop_1", name: "預設欄位", imgUrl: "" } ] }, ...JSON.parse(saved) } : { typeIcons: { happy: "", pure: "", cute: "" }, skillIcons: { sp: "", active: "", passive: "" }, avatars: {}, gachaPools: [ { id: "pool_1", name: "常設池", date: "2026-08-20" } ], coopTypes: [ { id: "coop_1", name: "預設欄位", imgUrl: "" } ] }; }
-function saveSystemSettingsToStorage() { localStorage.setItem(SETTINGS_KEY, JSON.stringify(systemSettings)); }
 function openSystemSettingsModal() { document.getElementById('sysIconHappy').value = systemSettings.typeIcons.happy||""; document.getElementById('sysIconPure').value = systemSettings.typeIcons.pure||""; document.getElementById('sysIconCute').value = systemSettings.typeIcons.cute||""; document.getElementById('sysIconSP').value = systemSettings.skillIcons.sp||""; document.getElementById('sysIconActive').value = systemSettings.skillIcons.active||""; document.getElementById('sysIconPassive').value = systemSettings.skillIcons.passive||""; renderGachaPoolsSettings(); renderCoopTypesSettings(); renderAvatarsSettings(); document.getElementById('systemSettingsModal').style.display = 'flex'; }
 function closeSystemSettingsModal() { document.getElementById('systemSettingsModal').style.display = 'none'; }
 function switchSettingTab(tabId) { document.querySelectorAll('.settings-tab-btn, .settings-panel').forEach(el => el.classList.remove('active')); event.currentTarget.classList.add('active'); document.getElementById('set-' + tabId).classList.add('active'); }
@@ -847,9 +853,6 @@ function updateView() {
     let dImg = selectedCostume.imgUrl || "https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=800&q=80";
     if (isShowingSigned && selectedCostume.signedImgUrl) dImg = selectedCostume.signedImgUrl;
 
-    // ==========================================
-    // 🌸 菁英 Miko 的「無贅字」精準替換邏輯 🌸
-    // ==========================================
     let repSp = [], repAct = [], repPas = [], repCoop = [];
     let currentBlooms = selectedCostume.bloomBonuses || [];
     if (currentLang === 'jp' && selectedCostume.bloomBonusesJp) currentBlooms = selectedCostume.bloomBonusesJp;
@@ -859,13 +862,10 @@ function updateView() {
         for(let i=0; i<currentBloomLevel; i++) {
             let bt = getLocArray(selectedCostume.bloomBonuses, selectedCostume.bloomBonusesJp, selectedCostume.bloomBonusesEn, i);
             if(!bt) continue;
-
-            // 捕捉多組數字變化
             let mx; const rx = /([\d\.]+%?)\s*(?:=>|->|變成|變更為|to)\s*([\d\.]+%?)/gi;
             let currentRep = [];
             while((mx=rx.exec(bt))!==null) currentRep.push({f:mx[1], t:mx[2]});
 
-            // 按照綻放層級蒐集替換規則，不產生任何贅字標籤！
             if (i === 0) repAct.push(...currentRep);
             else if (i === 2) repSp.push(...currentRep);
             else if (i === 3) repPas.push(...currentRep);
@@ -873,7 +873,6 @@ function updateView() {
         }
     }
 
-    // 將數字高亮套用進去
     const applyRepTo = (txt, repArr) => {
         if(!txt) return t('none');
         let res = txt;
@@ -913,7 +912,6 @@ function updateView() {
     ];
     let unifyDesc = bloomUnifyText[currentBloomLevel];
 
-    // 解決第二個問題：綻放區塊只顯示純文字的分類，隱藏後續敘述，但附帶可以編輯的按鈕喵！
     let blText = currentBloomLevel > 0
         ? `<span style="color:#60a5fa; font-weight:800; margin-right:6px;">【${unifyDesc}】</span>`
         : `<span style="color:#60a5fa; font-weight:800; margin-right:6px;">✨ ${t('bloomInit')}</span>`;
@@ -950,7 +948,6 @@ function updateView() {
     let cName = getLoc(selectedCostume.skills, 'costumeName');
     let cNameHtml = cName ? `<div style="font-weight: 900; font-size: 0.95rem; color: #fbcfe8; margin-bottom: 2px;">${cName} ${qeb('skills.costumeName', '服裝技能名稱')}</div>` : `${qeb('skills.costumeName', '服裝技能名稱')}`;
 
-    // 解決第一個問題：下面的 bSp, bAct, bPas, bCoop 徹底移除捏！
     detailContainer.innerHTML = `
         <div class="card-visual-col">
             <div class="card-top-header-bar">
@@ -1151,15 +1148,38 @@ function saveCostumeData() {
 }
 
 function deleteCurrentCostume() { if(selectedCostume && confirm(`確定刪除「${selectedCostume.title}」？`)){ selectedMember.costumes=selectedMember.costumes.filter(c=>c.id!==selectedCostume.id); selectedCostume=selectedMember.costumes[0]||null; saveDatabaseToStorage(); updateView(); closeEditModal(); alert("已刪除"); } }
-function exportDataJson() { const blob=new Blob([JSON.stringify(holoDatabase,null,4)],{type:"application/json;charset=utf-8"}), a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`HoloDreams_MultiLang_Backup_${new Date().toISOString().split('T')[0]}.json`; a.click(); }
+
+// 🌸 匯出功能菁英大升級：打包資料庫、系統設定、更新歷程
+function exportDataJson() { 
+    const exportObj = {
+        db: holoDatabase,
+        settings: systemSettings,
+        logs: updateLogs
+    };
+    const blob=new Blob([JSON.stringify(exportObj,null,4)],{type:"application/json;charset=utf-8"}), a=document.createElement("a"); 
+    a.href=URL.createObjectURL(blob); 
+    a.download=`HoloDreams_MultiLang_Backup_${new Date().toISOString().split('T')[0]}.json`; 
+    a.click(); 
+}
+
+// 🌸 匯入功能相容升級：同時支援舊版與新版
 function importDataJson(e) { 
     const f=e.target.files[0]; if(!f)return; const r=new FileReader(); 
     r.onload=function(ev){ 
         try{ 
             const importedMap = JSON.parse(ev.target.result);
             if (Array.isArray(importedMap)) { 
+                // 舊版備份 (純陣列)
                 holoDatabase = importedMap; 
-                alert("完整資料庫覆蓋匯入成功"); 
+                alert("舊版完整資料庫覆蓋匯入成功！系統設定與更新紀錄保持不變捏。"); 
+            } else if (importedMap.db) {
+                // 新版綜合備份
+                holoDatabase = importedMap.db;
+                if(importedMap.settings) systemSettings = importedMap.settings;
+                if(importedMap.logs) updateLogs = importedMap.logs;
+                saveSystemSettingsToStorage();
+                saveUpdateLogs();
+                alert("✨ 全新綜合備份匯入成功喵！(包含資料庫、設定、更新紀錄)");
             } else {
                 let addedCount = 0, updatedCount = 0;
                 for (const gen of holoDatabase) {
@@ -1182,7 +1202,7 @@ function importDataJson(e) {
                 }
                 alert(`✨ 局部匯入成功！\n新增了 ${addedCount} 套，更新了 ${updatedCount} 套！`);
             }
-            saveDatabaseToStorage(); updateView(); 
+            saveDatabaseToStorage(); updateView(); renderUpdateLogList(); renderHeaderDate();
         }catch(err){
             alert("讀取失敗！檔案格式錯誤！");
         } 
