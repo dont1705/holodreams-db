@@ -566,7 +566,7 @@ function updateHeaderStats() {
 function toggleSidebar() { document.getElementById('sidebarNav').classList.toggle('collapsed'); }
 function toggleQuickEdit() { window.isQuickEditMode = document.getElementById('quickEditToggle').checked; updateView(); }
 
-function loadUpdateLogs() { const saved = localStorage.getItem(LOG_KEY); return saved ? JSON.parse(saved) : [{ date: "2026-08-27", content: "新增即將開設的無人島ジャック！真夏のサバイバルデイズ轉但中Gamers 泳裝資料（共4名）" }]; }
+function loadUpdateLogs() { const saved = localStorage.getItem(LOG_KEY); return saved ? JSON.parse(saved) : [{ date: "2026-08-27", content: "1.目前剛設立好沒多久，資料上會有缺失或是不正確是正常，請多包涵 2.新增無人島ジャック！真夏のサバイバルデイズ中Gamers 泳裝資料" }]; }
 function saveUpdateLogs() { updateLogs.sort((a, b) => new Date(b.date) - new Date(a.date)); localStorage.setItem(LOG_KEY, JSON.stringify(updateLogs)); renderHeaderDate(); }
 function renderHeaderDate() { const el = document.getElementById('headerUpdateDate'); el.innerText = '📝 更新紀錄'; }
 function openUpdateLogModal() { document.getElementById('newLogDate').value = new Date().toISOString().split('T')[0]; document.getElementById('newLogContent').value = ''; renderUpdateLogList(); document.getElementById('updateLogModal').style.display = 'flex'; }
