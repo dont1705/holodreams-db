@@ -321,7 +321,7 @@
 <div class="modal-backdrop" id="updateLogModal">
     <div class="modal-box-large" style="max-width: 600px;">
         <h2>📝 更新歷程紀錄</h2>
-        <p id="modalStatsCount" style="font-size:0.85rem; color:var(--text-sub);">本網頁全程由AI編寫製作而成，有任何問題或不正確的地方請聯繫dont11108@gmail.com</p>
+        <p id="modalStatsCount" style="font-size:0.85rem; color:var(--text-sub);">本網頁全程由AI編寫製作而成，目前僅中文較為完整，日文與英文還需要時間去處理，有任何問題或不正確的地方請聯繫dont11108@gmail.com</p>
         <div style="display: none;"><div class="form-section-title">✨ 新增紀錄</div>
         <div class="form-grid">
             <div class="form-group"><label>更新日期</label><input type="date" id="newLogDate"></div>
@@ -568,7 +568,8 @@ function toggleQuickEdit() { window.isQuickEditMode = document.getElementById('q
 // ==========================================
 // 🌸 Miko 的菁英 JSON 資料打包邏輯 🌸
 // ==========================================
-function getHardcodedLogs() { return [{"id": 1, "date": "2026-08-27", "content": "新增即將開設的無人島ジャック！真夏のサバイバルデイズ轉蛋中Gamers 泳裝資料（共4名）"}]; }
+function getHardcodedLogs() { return [{"id": 1, "date": "2026-08-27", "content": "新增無人島ジャック！真夏のサバイバルデイズ中Gamers 泳裝資料
+補充：目前人物全部資料尚未完全補齊，待有時間慢慢補完"}]; }
 function loadUpdateLogs() { const saved = localStorage.getItem(LOG_KEY); return saved ? JSON.parse(saved) : getHardcodedLogs(); }
 function saveUpdateLogs() { updateLogs.sort((a, b) => new Date(b.date) - new Date(a.date)); localStorage.setItem(LOG_KEY, JSON.stringify(updateLogs)); renderHeaderDate(); }
 
